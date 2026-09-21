@@ -44,7 +44,8 @@ header.stuck h1 {
   font-size: 20px;
   white-space: nowrap;
 }
-header.stuck .sub {
+header.stuck .sub,
+header.stuck .byline {
   display: none;
 }
 header.stuck .controls {
@@ -65,6 +66,20 @@ h1 {
 h1 em {
   font-style: normal;
   color: var(--accent);
+}
+.byline {
+  margin: 5px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.byline a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-soft);
+}
+.byline a:hover,
+.byline a:focus-visible {
+  border-bottom-color: var(--accent);
 }
 .sub {
   max-width: 70ch;
@@ -522,6 +537,11 @@ svg.focused .edge-label.on {
   .sub,
   header.stuck .sub {
     display: none;
+  }
+  /* The subtitle goes, but the byline stays: it is attribution, not chrome. */
+  .byline {
+    margin-top: 3px;
+    font-size: 12px;
   }
   .controls,
   header.stuck .controls {

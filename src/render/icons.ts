@@ -6,12 +6,16 @@ import type { LaneId } from '../data/lanes';
  * Inside an icon: `.f` fills with ink, `.a` strokes with the accent colour,
  * `.af` fills with it. The `*_unused` entries are leftovers from an earlier
  * eight-lane layout, kept for reference.
+ *
+ * 32x32 is the drawing convention rather than a clip: the markup is injected
+ * into a `<g>` in the chart's own SVG, so `control` is free to run out to x=37
+ * to give its feedback loop room. Lanes are far wider than the scaled icon.
  */
 export const ICONS: Record<LaneId, string> & Record<string, string> = {
   logic:
     '<circle cx="16" cy="16" r="13"/><circle cx="16" cy="16" r="8"/><circle cx="16" cy="16" r="3"/><path d="M16 3v5M16 24v5M3 16h5M24 16h5M6.8 6.8l3.5 3.5M21.7 21.7l3.5 3.5M6.8 25.2l3.5-3.5M21.7 10.3l3.5-3.5"/><circle class="af" cx="16" cy="8" r="1.8"/>',
   control:
-    '<path d="M1 12h5"/><path d="M4.5 10l1.5 2-1.5 2"/><circle cx="9" cy="12" r="3"/><path d="M7.6 12h2.8M9 10.6v2.8"/><path d="M12 12h4"/><path d="M14.5 10l1.5 2-1.5 2"/><rect x="16" y="7" width="11" height="10"/><path d="M27 12h4"/><path d="M29.5 10l1.5 2-1.5 2"/><path class="a" d="M29 12v10H9v-6"/><path class="a" d="M7.5 17.5L9 15.5l1.5 2"/>',
+    '<path d="M1 12h5"/><path d="M4.5 10l1.5 2-1.5 2"/><circle cx="9" cy="12" r="3"/><path d="M7.6 12h2.8M9 10.6v2.8"/><path d="M12 12h4"/><path d="M14.5 10l1.5 2-1.5 2"/><rect x="16" y="7" width="11" height="10"/><path d="M27 12h10"/><path d="M35.5 10l1.5 2-1.5 2"/><path class="a" d="M31 12v10H9v-6"/><circle class="af" cx="31" cy="12" r="1.1"/><path class="a" d="M7.5 17.5L9 15.5l1.5 2"/>',
   physics_unused:
     '<rect x="3" y="7" width="26" height="18"/><path d="M16 7v6M16 19v6"/><path class="a" d="M16 13l4 3-4 3"/><circle class="f" cx="8" cy="12" r="1.3"/><circle class="f" cx="10" cy="20" r="1.3"/><circle class="f" cx="7" cy="16.5" r="1.3"/><circle class="f" cx="12" cy="15" r="1.3"/><circle class="f" cx="24" cy="18" r="1.3"/>',
   stats:
