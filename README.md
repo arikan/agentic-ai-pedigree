@@ -1,10 +1,11 @@
 # A Pedigree of Agentic AI
 
-An interactive pedigree chart of agentic-AI intellectual traditions: 150 nodes
-and 213 edges in six lanes, from the House of Wisdom to tool-using language
-models. Hover or tap a node to trace its ancestry; solid lines are documented
-transfers, dashed lines are resemblances or priority without known transmission,
-each carrying the caveat that makes it weak.
+Where the ideas behind today’s AI agents came from, and who took what from
+whom. 150 people, papers, machines and institutions between 780 and 2026, in
+eight traditions drawn as six columns. Hover or tap a box to trace its
+ancestry: solid lines are documented transfers, dashed lines are resemblances
+or priority without known transmission, each carrying the caveat that makes it
+weak.
 
 Course material for *AI Agent & Platform Design*, Week 4.
 
