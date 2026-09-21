@@ -11,6 +11,9 @@ import type { PedigreeGraph } from '../graph';
  * Keyed by tradition, so there are eight — the six lane headings in `LANES` are
  * a different, shorter set.
  */
+/** Also the mobile sheet's label when nothing is selected. */
+export const INTRO_HEADING = 'Reading the chart';
+
 const TRADITION_NAME: Record<TraditionId, string> = {
   logic: 'Logic & computation',
   control: 'Control & cybernetics',
@@ -37,13 +40,17 @@ export type PanelDeps = {
   readonly weakCount: number;
 };
 
-/** The node view: what it is, what it draws on, what it feeds, where to read. */
+/**
+ * The node view: what it is, what it draws on, what it feeds, where to read.
+ *
+ * Returns the heading, which the mobile sheet shows on its collapsed bar.
+ */
 export function renderNodePanel(
   panel: Element,
   id: NodeId,
   { graph }: PanelDeps,
   pinned: boolean,
-): void {
+): string {
   const node = nodeById(id);
   const ins = [...graph.edgesInto(id)].sort(byYear((edge) => edge.from));
   const outs = [...graph.edgesOutOf(id)].sort(byYear((edge) => edge.to));
@@ -71,17 +78,21 @@ export function renderNodePanel(
     <p class="hint">${ancestors} ancestors and ${descendants} descendants highlighted. ${
       pinned ? 'Click again or press Escape to release.' : 'Click to pin.'
     }</p>`;
+
+  return node.name;
 }
 
 /** The resting state: how to read the chart, and what is on it. */
-export function renderIntroPanel(panel: Element, deps: PanelDeps): void {
+export function renderIntroPanel(panel: Element, deps: PanelDeps): string {
   panel.innerHTML = `
-    <h2>Reading the chart</h2>
+    <h2>${INTRO_HEADING}</h2>
     <div class="meta">${deps.nodeCount} nodes · ${deps.edgeCount} edges · ${deps.weakCount} weak</div>
     <p>Today’s agent is a statistical prior, post-trained by RL, wrapped in a tool loop, and named after the principal–agent relation in economics. Trace the bottom row to see how little of the chart it cites.</p>
     <p><b>Solid lines</b> are documented transfers. <b>Dashed lines</b> are resemblances or priority without known transmission; their caveat appears when traced.</p>
     <p>Time runs downward, compressed before 1900. Each node carries its own year; positions within a crowded decade are approximate. Each lane is headed by what "agent" means there.</p>
     <p class="hint">Hover or tap a node. Click empty space or press Escape to release a pinned one.</p>`;
+
+  return INTRO_HEADING;
 }
 
 function byYear(end: (edge: PedigreeEdge) => NodeId) {

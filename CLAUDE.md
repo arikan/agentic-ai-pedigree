@@ -34,12 +34,52 @@ data/ -> layout.ts -> render/ -> interaction/
 - **`src/layout.ts`** — the time scale, lane and slot placement, and edge routing. Pure geometry; no DOM.
 - **`src/graph.ts`** — `PedigreeGraph`: adjacency plus the ancestor/descendant walks behind a trace.
 - **`src/render/`** — `svg.ts` (the `el()` namespace helper), `chart.ts` (one pass, builds everything), `icons.ts`, `panel.ts`.
-- **`src/interaction/`** — `focus.ts` (`FocusController`), `search.ts` (`SearchBox`), `sticky-header.ts`.
+- **`src/interaction/`** — `focus.ts` (`FocusController`), `search.ts` (`SearchBox`), `theme.ts` (`ThemeController`), `sheet.ts` (`PanelSheet`), `sticky-header.ts`.
 - **`src/main.ts`** — resolves the DOM, wires the above, owns the global Escape handler.
 
 **Focus is CSS state, not a re-render.** `FocusController` puts `.focused` on the `<svg>` to dim everything, then `.on`/`.self` on the traced nodes and edges to lift them back out. Nothing is rebuilt, and no layout is recomputed. Keep it that way — re-rendering 150 nodes on hover is what this design avoids.
 
 **Edges are identified by index.** The data order, the routed geometry, and the rendered `<path>` elements all share one ordering, and `PedigreeGraph` returns edge *indices* from its walks. Anything that reorders edges must reorder all three together.
+
+### Two layout modes
+
+`@media (max-width: 899px)` is not a set of tweaks — it is a different shell.
+Wide screens scroll the page and put the panel in a sticky column. Narrow
+screens stop the page scrolling (`html, body { overflow: hidden }`), make
+`.chartbox` a pane that scrolls in both axes, and turn the panel into a fixed
+bottom sheet that `PanelSheet` collapses to a `--sheet-peek` bar.
+
+Two traps live here:
+
+- The narrow `.layout` **must** set `align-items: stretch`. The base rule says
+  `align-items: start`, which in a row flex container leaves the chart pane as
+  tall as its 3275px content — and with the page no longer scrolling, the bottom
+  of the chart becomes unreachable.
+- `--wrap-max` and `--panel-w` are raised at 1800px and 2200px so wide screens
+  spend width on the chart. `.layout` reads `var(--panel-w)`; don't hardcode it
+  back.
+
+### Touch and the tap-through click
+
+Hover tracing is bound only when `(hover: hover)` matches, so on a touch device
+a tap pins instead of tracing on the way past.
+
+`FocusController.pin()` takes `{ suppressTapThrough: true }`, which the search
+box passes. Touch browsers deliver a click to whatever is under the finger when
+the gesture ends; picking a result hides the result list *and* scrolls the chart,
+so that click would land on the chart that just moved into place — releasing the
+pin on empty canvas, or pinning the wrong node. The guard ignores both node and
+canvas clicks for `TAP_THROUGH_MS`. If you add another programmatic pin, pass
+the same option.
+
+### Theme
+
+Three states: `system`, `light`, `dark`, stored under `pedigree-theme`.
+`system` *removes* `data-theme` so the media query decides — it is not a third
+palette. Storage access is wrapped in try/catch because it throws in private
+mode. The inline script in `index.html` duplicates the read on purpose, to
+apply the attribute before first paint; keep the storage key in step with
+`theme.ts`.
 
 ### Traditions vs. lanes
 

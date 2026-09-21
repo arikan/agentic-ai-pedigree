@@ -2,10 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>A Pedigree of Agentic AI</title>
 <meta name="description" content="An interactive pedigree of agentic AI: seven traditions in six lanes, from the House of Wisdom to tool-using language models.">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f5f1e8">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>
+  // Pin the stored theme before first paint, so a dark page never flashes
+  // light. The full controller takes over once the module loads.
+  try {
+    var t = localStorage.getItem('pedigree-theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
 </head>
 <body>
 
@@ -13,17 +23,37 @@
 <header>
   <h1>A pedigree of <em>agentic AI</em> systems</h1>
   <p class="sub">Seven traditions in six lanes, from the House of Wisdom to tool-using language models. Hover or tap a node to trace its ancestry.</p>
-  <div class="search">
-    <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-    <input id="search" type="search" placeholder="Find a name, work, or year" autocomplete="off" aria-label="Find a node" aria-controls="results" aria-expanded="false">
-    <kbd class="key" aria-hidden="true">/</kbd>
-    <ul class="results" id="results" role="listbox" hidden></ul>
+  <div class="controls">
+    <div class="search">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input id="search" type="search" placeholder="Find a name, work, or year" autocomplete="off" aria-label="Find a node" aria-controls="results" aria-expanded="false">
+      <kbd class="key" aria-hidden="true">/</kbd>
+      <ul class="results" id="results" role="listbox" hidden></ul>
+    </div>
+    <div class="themes" id="themes" role="radiogroup" aria-label="Colour theme">
+      <button type="button" role="radio" data-theme="system" aria-checked="true" aria-label="Match system theme" title="Match system">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 2a6 6 0 0 0 0 12z" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button type="button" role="radio" data-theme="light" aria-checked="false" aria-label="Light theme" title="Light">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.25"/><path d="M8 1v1.75M8 13.25V15M1 8h1.75M13.25 8H15M3.05 3.05l1.24 1.24M11.71 11.71l1.24 1.24M3.05 12.95l1.24-1.24M11.71 4.29l1.24-1.24"/></svg>
+      </button>
+      <button type="button" role="radio" data-theme="dark" aria-checked="false" aria-label="Dark theme" title="Dark">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1z"/></svg>
+      </button>
+    </div>
   </div>
 </header>
 
 <div class="layout">
   <div class="chartbox" id="chartbox"></div>
-  <aside class="panel" id="panel"></aside>
+  <aside class="panel" id="panel" data-expanded="false">
+    <button class="sheet-handle" id="sheet-handle" type="button" aria-expanded="false" aria-controls="panel-body">
+      <span class="grip" aria-hidden="true"></span>
+      <span class="label" id="sheet-label">Reading the chart</span>
+      <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4"/></svg>
+    </button>
+    <div class="panel-body" id="panel-body"></div>
+  </aside>
 </div>
 </div>
 

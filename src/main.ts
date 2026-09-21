@@ -6,7 +6,9 @@ import { nodes } from './data/nodes';
 import { PedigreeGraph } from './graph';
 import { FocusController } from './interaction/focus';
 import { SearchBox } from './interaction/search';
+import { PanelSheet } from './interaction/sheet';
 import { stickyHeader } from './interaction/sticky-header';
+import { ThemeController } from './interaction/theme';
 import { computeLayout, routeEdges } from './layout';
 import { renderChart } from './render/chart';
 import type { PanelDeps } from './render/panel';
@@ -22,9 +24,16 @@ function required<T extends Element>(selector: string, type: new () => T): T {
 
 const chartbox = required('#chartbox', HTMLDivElement);
 const panel = required('#panel', HTMLElement);
+const panelBody = required('#panel-body', HTMLDivElement);
+const sheetHandle = required('#sheet-handle', HTMLButtonElement);
+const sheetLabel = required('#sheet-label', HTMLSpanElement);
 const header = required('header', HTMLElement);
 const input = required('#search', HTMLInputElement);
 const results = required('#results', HTMLUListElement);
+const themes = required('#themes', HTMLDivElement);
+
+new ThemeController(themes);
+const sheet = new PanelSheet(panel, sheetHandle, sheetLabel);
 
 const layout = computeLayout(nodes);
 const routed = routeEdges(edges, layout.placedById, layout.placed);
@@ -38,7 +47,16 @@ const panelDeps: PanelDeps = {
   weakCount: edges.filter((edge) => edge.kind === 'weak').length,
 };
 
-const focus = new FocusController(view, graph, panel, panelDeps);
+const focus = new FocusController({
+  view,
+  graph,
+  panel: panelBody,
+  deps: panelDeps,
+  // A hover only renames the collapsed bar; a pin is what opens the sheet.
+  onFocus: (heading, pinned) => (pinned ? sheet.show(heading) : sheet.label(heading)),
+  onClear: (heading) => sheet.reset(heading),
+});
+
 stickyHeader(header);
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -48,7 +66,7 @@ const search = new SearchBox({
   list: results,
   nodes,
   onSelect: (id: NodeId) => {
-    focus.pin(id);
+    focus.pin(id, { suppressTapThrough: true });
     view.nodeEls.get(id)?.scrollIntoView({
       block: 'center',
       inline: 'center',

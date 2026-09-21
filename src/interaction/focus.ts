@@ -15,15 +15,51 @@ import { renderIntroPanel, renderNodePanel } from '../render/panel';
  * Hover traces transiently. A click pins, which suppresses hover until the pin
  * is released by clicking the node again, clicking empty canvas, or Escape.
  */
+/**
+ * How long after a programmatic pin an incoming click is ignored.
+ *
+ * Touch browsers deliver a click to whatever sits under the finger once the
+ * gesture ends. Picking a search result hides the result list and scrolls the
+ * chart, so that click lands on the chart that has just moved into place — on
+ * empty canvas it would release the pin, and on a node it would pin the wrong
+ * one. Neither is what the pick asked for.
+ */
+const TAP_THROUGH_MS = 500;
+
+export type PinOptions = {
+  /** Set when the pin came from something other than a click on the chart. */
+  readonly suppressTapThrough?: boolean;
+};
+
+export type FocusOptions = {
+  readonly view: ChartView;
+  readonly graph: PedigreeGraph;
+  /** The element the panel markup is written into. */
+  readonly panel: Element;
+  readonly deps: PanelDeps;
+  /**
+   * A lineage is being traced. `pinned` distinguishes a deliberate selection
+   * from a passing hover, which is what decides whether the mobile sheet opens.
+   */
+  readonly onFocus?: (heading: string, pinned: boolean) => void;
+  /** Back to the resting state. */
+  readonly onClear?: (heading: string) => void;
+};
+
 export class FocusController {
   private pinnedId: NodeId | null = null;
+  /** Set by a programmatic pin; see `PinOptions.suppressTapThrough`. */
+  private ignoreClicksUntil = 0;
+  private readonly view: ChartView;
+  private readonly graph: PedigreeGraph;
+  private readonly panel: Element;
+  private readonly panelDeps: PanelDeps;
 
-  constructor(
-    private readonly view: ChartView,
-    private readonly graph: PedigreeGraph,
-    private readonly panel: Element,
-    private readonly panelDeps: PanelDeps,
-  ) {
+  constructor(private readonly options: FocusOptions) {
+    this.view = options.view;
+    this.graph = options.graph;
+    this.panel = options.panel;
+    this.panelDeps = options.deps;
     this.attach();
     this.clear();
   }
@@ -51,7 +87,9 @@ export class FocusController {
       this.view.labelEls.get(index)?.classList.toggle('on', on);
     }
 
-    renderNodePanel(this.panel, id, this.panelDeps, this.pinnedId === id);
+    const pinned = this.pinnedId === id;
+    const heading = renderNodePanel(this.panel, id, this.panelDeps, pinned);
+    this.options.onFocus?.(heading, pinned);
   }
 
   /** Drop the highlight and go back to the intro panel. */
@@ -64,12 +102,16 @@ export class FocusController {
       element.classList.remove('on');
       this.view.labelEls.get(index)?.classList.remove('on');
     }
-    renderIntroPanel(this.panel, this.panelDeps);
+    const heading = renderIntroPanel(this.panel, this.panelDeps);
+    this.options.onClear?.(heading);
   }
 
   /** Pin `id`, so hovering elsewhere no longer changes the trace. */
-  pin(id: NodeId): void {
+  pin(id: NodeId, options: PinOptions = {}): void {
     this.pinnedId = id;
+    if (options.suppressTapThrough) {
+      this.ignoreClicksUntil = performance.now() + TAP_THROUGH_MS;
+    }
     this.focus(id);
   }
 
@@ -79,19 +121,30 @@ export class FocusController {
     this.clear();
   }
 
+  /** True while a stray click from a finished touch gesture may still arrive. */
+  private tapThrough(): boolean {
+    return performance.now() < this.ignoreClicksUntil;
+  }
+
   private attach(): void {
     const { nodeLayer, svg } = this.view;
 
-    nodeLayer.addEventListener('pointerover', (event) => {
-      const id = nodeIdFrom(event);
-      if (id && !this.pinnedId) this.focus(id);
-    });
+    // On a touch screen a tap would fire pointerover and then click, tracing
+    // twice and leaving the trace behind on the way out. Bind hover only where
+    // a pointer can actually hover.
+    if (window.matchMedia('(hover: hover)').matches) {
+      nodeLayer.addEventListener('pointerover', (event) => {
+        const id = nodeIdFrom(event);
+        if (id && !this.pinnedId) this.focus(id);
+      });
 
-    nodeLayer.addEventListener('pointerout', (event) => {
-      if (nodeIdFrom(event) && !this.pinnedId) this.clear();
-    });
+      nodeLayer.addEventListener('pointerout', (event) => {
+        if (nodeIdFrom(event) && !this.pinnedId) this.clear();
+      });
+    }
 
     nodeLayer.addEventListener('click', (event) => {
+      if (this.tapThrough()) return;
       const id = nodeIdFrom(event);
       if (!id) return;
       if (this.pinnedId === id) this.release();
@@ -113,9 +166,12 @@ export class FocusController {
       if (id && !this.pinnedId) this.focus(id);
     });
 
-    // A click on empty canvas releases.
+    // A click on empty canvas releases — unless it is the tap-through click
+    // from a pin made somewhere else entirely.
     svg.addEventListener('click', (event) => {
-      if (!groupFrom(event) && this.pinnedId) this.release();
+      if (groupFrom(event) || !this.pinnedId) return;
+      if (this.tapThrough()) return;
+      this.release();
     });
   }
 }

@@ -18,6 +18,7 @@
   --edge: rgba(35, 33, 32, 0.3);
   --edge-weak: rgba(35, 33, 32, 0.38);
   --panel: #fbf9f4;
+  --shadow: rgba(35, 33, 32, 0.16);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -35,6 +36,7 @@
     --edge: rgba(237, 231, 218, 0.28);
     --edge-weak: rgba(237, 231, 218, 0.36);
     --panel: #2a2826;
+    --shadow: rgba(0, 0, 0, 0.5);
   }
 }
 :root[data-theme="dark"] {
@@ -52,4 +54,5 @@
   --edge: rgba(237, 231, 218, 0.28);
   --edge-weak: rgba(237, 231, 218, 0.36);
   --panel: #2a2826;
+  --shadow: rgba(0, 0, 0, 0.5);
 }

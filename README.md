@@ -28,6 +28,26 @@ bun run dev        # http://localhost:5173
 
 Pushing to `main` builds and publishes to GitHub Pages.
 
+## Theme and layout
+
+**Theme** is a three-way choice in the header: follow the system, or pin light
+or dark. The choice persists in `localStorage`, and an inline script in
+`index.html` applies it before first paint so a pinned dark page never flashes
+light. The colours themselves are pure CSS — `src/styles/tokens.css` holds three
+blocks that must stay in sync, and `ThemeController` only sets `data-theme`.
+
+**Layout** has two modes:
+
+- **Wide (≥900px)** — the page scrolls, the panel is a sticky column, and the
+  header collapses to a bar once you scroll. From 1800px the panel widens and
+  the page's width ceiling rises; by 2200px the whole 1684px chart fits beside
+  the panel with no horizontal scrolling at all.
+- **Narrow (<900px)** — an app shell. The page itself stops scrolling, the chart
+  becomes a pane that scrolls in both directions, and the panel becomes a bottom
+  sheet collapsed to a labelled bar. Tapping a node opens it; tapping the bar,
+  or Escape, closes it. Hover tracing is not bound at all on a device that
+  cannot hover, so a tap pins cleanly instead of tracing twice.
+
 ## Editing the chart
 
 All content is in `src/data/`, and it is typed so that the mistakes that used to

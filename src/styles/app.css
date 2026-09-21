@@ -11,10 +11,17 @@ body {
   font-size: 14px;
   line-height: 1.45;
 }
+:root {
+  /* Raised on wide screens so the whole chart can fit without scrolling. */
+  --wrap-max: 1720px;
+  --panel-w: 320px;
+  /* How much of the bottom sheet stays visible when collapsed (small screens). */
+  --sheet-peek: 52px;
+}
 .wrap {
   padding-block: 18px 40px;
   padding-inline: 16px;
-  max-width: 1720px;
+  max-width: var(--wrap-max);
   margin: 0 auto;
 }
 header {
@@ -40,8 +47,10 @@ header.stuck h1 {
 header.stuck .sub {
   display: none;
 }
-header.stuck .search {
+header.stuck .controls {
   margin-top: 0;
+}
+header.stuck .search {
   width: 300px;
 }
 h1 {
@@ -71,11 +80,17 @@ h1 em {
   color: var(--ink);
   font-weight: 600;
 }
+/* Search plus the theme switch, on one line. */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
 .search {
   position: relative;
   width: 300px;
   max-width: 100%;
-  margin-top: 10px;
 }
 .search input {
   width: 100%;
@@ -192,7 +207,7 @@ h1 em {
 }
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) var(--panel-w);
   gap: 20px;
   align-items: start;
 }
@@ -211,9 +226,20 @@ svg {
   top: calc(env(safe-area-inset-top, 0px) + var(--hdr, 0px));
   background: var(--panel);
   border: 1px solid var(--rule);
-  padding: 16px 18px;
   max-height: calc(100vh - 24px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+/* Scrolling lives on the body, so the sheet handle can stay put on mobile. */
+.panel-body {
   overflow: auto;
+  padding: 16px 18px;
+  overscroll-behavior: contain;
+}
+/* The grab bar for the mobile sheet; no purpose on a wide screen. */
+.sheet-handle {
+  display: none;
 }
 .panel h2 {
   font-family: Georgia, serif;
@@ -381,41 +407,244 @@ svg.focused .edge-label.on {
   stroke: var(--accent);
   stroke-width: 1.6;
 }
-@media (max-width: 900px) {
-  .search {
-    width: 100%;
+/* ---------------------------------------------------------------------------
+   Wide screens: spend the extra width on the chart, not on margins.
+   At 2200px+ the whole 1684px chart fits beside the panel, so the horizontal
+   scroll disappears entirely.
+   --------------------------------------------------------------------------- */
+@media (min-width: 1800px) {
+  :root {
+    --wrap-max: 1840px;
+    --panel-w: 360px;
   }
+}
+@media (min-width: 2200px) {
+  :root {
+    --wrap-max: 2140px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Small screens: an app shell rather than a long page.
+
+   The page itself stops scrolling; the chart becomes a pane that scrolls in
+   both directions, and the panel becomes a bottom sheet that is collapsed to a
+   labelled bar until it is needed. That buys the chart the vertical space the
+   old 42vh fixed panel took away.
+   --------------------------------------------------------------------------- */
+@media (max-width: 899px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+  .wrap {
+    height: 100%;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* Always compact: there is no room for the full masthead. */
+  header {
+    position: relative;
+    z-index: 6;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+  header,
   header.stuck {
-    flex-wrap: wrap;
-    gap: 6px 12px;
+    display: block;
   }
+  h1 {
+    font-size: 19px;
+    white-space: normal;
+  }
+  .sub,
+  header.stuck .sub {
+    display: none;
+  }
+  .controls,
+  header.stuck .controls {
+    margin-top: 8px;
+  }
+  .search,
   header.stuck .search {
-    width: 100%;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
   }
+
   .layout {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 0;
+    /* The base rule sets align-items:start, which would leave the chart pane
+       as tall as its 3275px content and put the bottom of the chart out of
+       reach on a page that no longer scrolls. */
+    align-items: stretch;
+    /* Leave the collapsed sheet uncovered. */
+    padding-bottom: calc(var(--sheet-peek) + env(safe-area-inset-bottom, 0px));
   }
+  .chartbox {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    border: 0;
+  }
+
   .panel {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
     top: auto;
-    max-height: 42vh;
-    border-left: 0;
-    border-right: 0;
-    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-    z-index: 2;
+    z-index: 7;
+    max-height: min(78vh, 560px);
+    border: 0;
+    border-top: 1px solid var(--rule);
+    box-shadow: 0 -6px 24px var(--shadow);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* Collapsed: only the handle shows. */
+    transform: translateY(calc(100% - var(--sheet-peek) - env(safe-area-inset-bottom, 0px)));
+    transition: transform 0.22s ease;
   }
-  .wrap {
-    padding-bottom: 46vh;
+  .panel[data-expanded="true"] {
+    transform: translateY(0);
   }
-  h1 {
-    font-size: 28px;
+  .panel-body {
+    padding: 4px 16px 18px;
+  }
+  /* The handle already names what is showing; the heading would repeat it. */
+  .panel-body h2 {
+    display: none;
+  }
+  .panel-body .meta {
+    margin-top: 2px;
+  }
+
+  .sheet-handle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    height: var(--sheet-peek);
+    padding: 0 16px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sheet-handle .grip {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 34px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--rule);
+  }
+  .sheet-handle .label {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: Georgia, serif;
+    font-size: 15px;
+  }
+  .sheet-handle .chev {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    color: var(--ink-3);
+    transition: transform 0.22s ease;
+  }
+  .panel[data-expanded="true"] .sheet-handle .chev {
+    transform: rotate(180deg);
+  }
+
+  .results {
+    max-height: 50vh;
   }
 }
+
+/* A pointer that cannot hover should not be asked to. */
+@media (hover: none) {
+  .results li:hover {
+    background: transparent;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Theme switch: three states, because "auto" is a real choice and not the
+   absence of one. Follows the system until told otherwise.
+   --------------------------------------------------------------------------- */
+.themes {
+  display: flex;
+  flex: 0 0 auto;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--node);
+}
+.themes button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.themes button:first-child {
+  border-left: 0;
+}
+.themes button:hover {
+  color: var(--ink);
+}
+.themes button[aria-checked="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.themes button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.sheet-handle .chev {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.themes svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
