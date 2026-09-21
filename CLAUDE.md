@@ -130,7 +130,3 @@ Prose style in `note` is terse and specific: one to three sentences, usually nam
 - Lane pictograms in `render/icons.ts` are 32×32 inline SVG keyed by **lane** id; inside them `.f` fills with ink, `.a` strokes with the accent, `.af` fills with it. The `*_unused` entries are leftovers from an earlier eight-lane layout.
 - Panel markup is built from template strings, so every interpolated value goes through `esc()`.
 - `vite.config.ts` reads `BASE_PATH` so the Pages build can be served from `/<repo>/`.
-
-## Other agent configs present
-
-`~/.codex` and `~/.gemini` exist on this machine. To bring their user-level MCP servers, slash commands, subagents, skills, or instructions into Claude Code, reply `/import` to scan and list what's importable, then `/import --yes=<digest>` (the scan output names the digest) to apply it.
