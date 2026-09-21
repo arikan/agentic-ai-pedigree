@@ -27,7 +27,18 @@ bun run dev        # http://localhost:5173
 | `bun run format` | Apply Biome fixes |
 | `bun run check` | validate + typecheck + lint, as CI runs them |
 
-Pushing to `main` builds and publishes to GitHub Pages.
+## Publishing
+
+Pushing to `main` runs `.github/workflows/deploy.yml`, which validates the data,
+typechecks, lints, builds and publishes to GitHub Pages. The site needs
+**Settings > Pages > Source: GitHub Actions** set once, after which every push
+to `main` redeploys.
+
+The base path is worked out in the workflow rather than committed: a project
+site builds with `/<repo>/`, while an `<account>.github.io` repo or a
+`public/CNAME` file builds with `/`. To move to a custom domain, add
+`public/CNAME` containing the hostname, point a DNS CNAME record at
+`<account>.github.io`, and set the domain under Settings > Pages.
 
 ## Theme and layout
 

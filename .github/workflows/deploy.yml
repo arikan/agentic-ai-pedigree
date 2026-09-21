@@ -32,10 +32,18 @@ jobs:
       - run: bun run typecheck
       - run: bun run lint
 
-      # Pages serves from /<repo>/, so the asset URLs need that prefix.
-      - run: bun run vite build
-        env:
-          BASE_PATH: /${{ github.event.repository.name }}/
+      # Pages serves a project site from /<repo>/, so the asset URLs need that
+      # prefix. A user or org site (<account>.github.io) and a custom domain
+      # both serve from the root instead. GITHUB_REPOSITORY is always set,
+      # unlike the event payload, which varies by trigger.
+      - name: Build
+        run: |
+          repo="${GITHUB_REPOSITORY#*/}"
+          base="/$repo/"
+          case "$repo" in *.github.io) base="/" ;; esac
+          if [ -f public/CNAME ]; then base="/"; fi
+          echo "Building with BASE_PATH=$base"
+          BASE_PATH="$base" bun run vite build
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
