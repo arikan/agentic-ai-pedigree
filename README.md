@@ -1,7 +1,7 @@
 # A Pedigree of Agentic AI
 
 Where the ideas behind today’s AI agents came from, and who took what from
-whom. 150 people, papers, machines and institutions between 780 and 2026, in
+whom. 150 people, papers, machines and institutions, from year 780 to 2026, in
 eight traditions drawn as six columns. Hover or tap a box to trace its
 ancestry: solid lines are documented transfers, dashed lines are resemblances
 or priority without known transmission, each carrying the caveat that makes it
