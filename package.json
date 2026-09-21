@@ -1,0 +1,24 @@
+{
+  "name": "agentic-ai-pedigree",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An interactive pedigree chart of agentic-AI intellectual traditions",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "bun run validate && tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "validate": "bun run scripts/validate-data.ts",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "check": "bun run validate && tsc --noEmit && biome check ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "^1.4.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  },
+  "trustedDependencies": ["@biomejs/biome"]
+}
