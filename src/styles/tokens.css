@@ -1,0 +1,55 @@
+/* Colour tokens.
+ *
+ * Three blocks, and they must stay in sync: light, system-dark (unless the
+ * page is pinned light), and explicitly-dark via [data-theme="dark"].
+ */
+:root {
+  --ground: #f5f1e8;
+  --ground-2: #ede8dc;
+  --lane-alt: rgba(35, 33, 32, 0.035);
+  --ink: #232120;
+  --ink-2: #5c5750;
+  --ink-3: #8a847a;
+  --rule: rgba(35, 33, 32, 0.18);
+  --accent: #b9482e;
+  --accent-soft: rgba(185, 72, 46, 0.14);
+  --node: #fbf9f4;
+  --node-edge: rgba(35, 33, 32, 0.28);
+  --edge: rgba(35, 33, 32, 0.3);
+  --edge-weak: rgba(35, 33, 32, 0.38);
+  --panel: #fbf9f4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #232120;
+    --ground-2: #2b2927;
+    --lane-alt: rgba(237, 231, 218, 0.035);
+    --ink: #ede7da;
+    --ink-2: #b8b0a2;
+    --ink-3: #847d72;
+    --rule: rgba(237, 231, 218, 0.18);
+    --accent: #d9694c;
+    --accent-soft: rgba(217, 105, 76, 0.18);
+    --node: #2c2a28;
+    --node-edge: rgba(237, 231, 218, 0.26);
+    --edge: rgba(237, 231, 218, 0.28);
+    --edge-weak: rgba(237, 231, 218, 0.36);
+    --panel: #2a2826;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #232120;
+  --ground-2: #2b2927;
+  --lane-alt: rgba(237, 231, 218, 0.035);
+  --ink: #ede7da;
+  --ink-2: #b8b0a2;
+  --ink-3: #847d72;
+  --rule: rgba(237, 231, 218, 0.18);
+  --accent: #d9694c;
+  --accent-soft: rgba(217, 105, 76, 0.18);
+  --node: #2c2a28;
+  --node-edge: rgba(237, 231, 218, 0.26);
+  --edge: rgba(237, 231, 218, 0.28);
+  --edge-weak: rgba(237, 231, 218, 0.36);
+  --panel: #2a2826;
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Pedigree of Agentic AI</title>
+<meta name="description" content="An interactive pedigree of agentic AI: seven traditions in six lanes, from the House of Wisdom to tool-using language models.">
+<meta name="color-scheme" content="light dark">
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <h1>A pedigree of <em>agentic AI</em> systems</h1>
+  <p class="sub">Seven traditions in six lanes, from the House of Wisdom to tool-using language models. Hover or tap a node to trace its ancestry.</p>
+  <div class="search">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input id="search" type="search" placeholder="Find a name, work, or year" autocomplete="off" aria-label="Find a node" aria-controls="results" aria-expanded="false">
+    <kbd class="key" aria-hidden="true">/</kbd>
+    <ul class="results" id="results" role="listbox" hidden></ul>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="chartbox" id="chartbox"></div>
+  <aside class="panel" id="panel"></aside>
+</div>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
