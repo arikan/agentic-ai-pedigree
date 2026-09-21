@@ -9,11 +9,16 @@
 <meta name="theme-color" content="#f5f1e8">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script>
-  // Pin the stored theme before first paint, so a dark page never flashes
-  // light. The full controller takes over once the module loads.
+  // Apply the theme before first paint, so a dark page never flashes light.
+  // The system preference only seeds the first visit; the controller takes
+  // over once the module loads. If storage is unavailable the attribute stays
+  // off and the stylesheet's prefers-color-scheme block decides.
   try {
     var t = localStorage.getItem('pedigree-theme');
-    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    if (t !== 'light' && t !== 'dark') {
+      t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
   } catch (e) {}
 </script>
 </head>
@@ -21,6 +26,10 @@
 
 <div class="wrap">
 <header>
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Dark theme" title="Switch to dark theme">
+    <svg class="i-sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.25"/><path d="M8 1v1.75M8 13.25V15M1 8h1.75M13.25 8H15M3.05 3.05l1.24 1.24M11.71 11.71l1.24 1.24M3.05 12.95l1.24-1.24M11.71 4.29l1.24-1.24"/></svg>
+    <svg class="i-moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1z"/></svg>
+  </button>
   <h1>A pedigree of <em>agentic AI</em> systems</h1>
   <p class="sub">Seven traditions in six lanes, from the House of Wisdom to tool-using language models. Hover or tap a node to trace its ancestry.</p>
   <div class="controls">
@@ -29,17 +38,6 @@
       <input id="search" type="search" placeholder="Find a name, work, or year" autocomplete="off" aria-label="Find a node" aria-controls="results" aria-expanded="false">
       <kbd class="key" aria-hidden="true">/</kbd>
       <ul class="results" id="results" role="listbox" hidden></ul>
-    </div>
-    <div class="themes" id="themes" role="radiogroup" aria-label="Colour theme">
-      <button type="button" role="radio" data-theme="system" aria-checked="true" aria-label="Match system theme" title="Match system">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 2a6 6 0 0 0 0 12z" fill="currentColor" stroke="none"/></svg>
-      </button>
-      <button type="button" role="radio" data-theme="light" aria-checked="false" aria-label="Light theme" title="Light">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.25"/><path d="M8 1v1.75M8 13.25V15M1 8h1.75M13.25 8H15M3.05 3.05l1.24 1.24M11.71 11.71l1.24 1.24M3.05 12.95l1.24-1.24M11.71 4.29l1.24-1.24"/></svg>
-      </button>
-      <button type="button" role="radio" data-theme="dark" aria-checked="false" aria-label="Dark theme" title="Dark">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1z"/></svg>
-      </button>
     </div>
   </div>
 </header>

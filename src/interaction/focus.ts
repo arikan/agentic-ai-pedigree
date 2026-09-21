@@ -121,9 +121,24 @@ export class FocusController {
     this.clear();
   }
 
-  /** True while a stray click from a finished touch gesture may still arrive. */
-  private tapThrough(): boolean {
-    return performance.now() < this.ignoreClicksUntil;
+  /** Pin `id`, or release it if it is already the pinned one. */
+  private togglePin(id: NodeId | null): void {
+    if (!id) return;
+    if (this.pinnedId === id) this.release();
+    else this.pin(id);
+  }
+
+  /**
+   * Is this click the stray one a finished touch gesture leaves behind?
+   *
+   * A click carrying `pointerType: 'mouse'` never is, so a real mouse click
+   * arriving just after a programmatic pin is honoured — which matters on a
+   * hybrid machine with both a trackpad and a touchscreen.
+   */
+  private tapThrough(event: Event): boolean {
+    if (performance.now() >= this.ignoreClicksUntil) return false;
+    if (event instanceof PointerEvent && event.pointerType === 'mouse') return false;
+    return true;
   }
 
   private attach(): void {
@@ -144,21 +159,17 @@ export class FocusController {
     }
 
     nodeLayer.addEventListener('click', (event) => {
-      if (this.tapThrough()) return;
-      const id = nodeIdFrom(event);
-      if (!id) return;
-      if (this.pinnedId === id) this.release();
-      else this.pin(id);
+      if (this.tapThrough(event)) return;
+      this.togglePin(nodeIdFrom(event));
     });
 
-    // Keyboard equivalent of the click, for tab-through.
+    // Keyboard equivalent, for tab-through. This toggles directly rather than
+    // synthesising a click, which would have to be told apart from a real one.
     nodeLayer.addEventListener('keydown', (event) => {
-      const target = groupFrom(event);
-      if (!target) return;
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        target.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      }
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      if (!groupFrom(event)) return;
+      event.preventDefault();
+      this.togglePin(nodeIdFrom(event));
     });
 
     nodeLayer.addEventListener('focusin', (event) => {
@@ -170,7 +181,7 @@ export class FocusController {
     // from a pin made somewhere else entirely.
     svg.addEventListener('click', (event) => {
       if (groupFrom(event) || !this.pinnedId) return;
-      if (this.tapThrough()) return;
+      if (this.tapThrough(event)) return;
       this.release();
     });
   }

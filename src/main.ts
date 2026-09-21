@@ -12,6 +12,7 @@ import { ThemeController } from './interaction/theme';
 import { computeLayout, routeEdges } from './layout';
 import { renderChart } from './render/chart';
 import type { PanelDeps } from './render/panel';
+import { RELATION_ATTR } from './render/panel';
 
 /** Fail loudly at startup rather than half-rendering. */
 function required<T extends Element>(selector: string, type: new () => T): T {
@@ -30,9 +31,9 @@ const sheetLabel = required('#sheet-label', HTMLSpanElement);
 const header = required('header', HTMLElement);
 const input = required('#search', HTMLInputElement);
 const results = required('#results', HTMLUListElement);
-const themes = required('#themes', HTMLDivElement);
+const themeToggle = required('#theme-toggle', HTMLButtonElement);
 
-new ThemeController(themes);
+new ThemeController(themeToggle);
 const sheet = new PanelSheet(panel, sheetHandle, sheetLabel);
 
 const layout = computeLayout(nodes);
@@ -61,18 +62,45 @@ stickyHeader(header);
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/**
+ * Go to a node: pin it, bring it on screen, and put keyboard focus on it.
+ *
+ * Shared by the search box and the panel's relation rows, so arriving from
+ * either behaves the same. `suppressTapThrough` is required for both, since
+ * neither is a click on the chart itself.
+ */
+function selectNode(id: NodeId): void {
+  focus.pin(id, { suppressTapThrough: true });
+
+  const element = view.nodeEls.get(id);
+  if (!element) return;
+
+  // Focus first, without scrolling, then centre it deliberately.
+  element.focus({ preventScroll: true });
+  element.scrollIntoView({
+    block: 'center',
+    inline: 'center',
+    behavior: reducedMotion ? 'auto' : 'smooth',
+  });
+}
+
+// The panel is rebuilt on every focus change, so its rows are handled by
+// delegation from the container that survives.
+panelBody.addEventListener('click', (event) => {
+  const target = event.target;
+  if (!(target instanceof Element)) return;
+
+  const row = target.closest(`[${RELATION_ATTR}]`);
+  const id = row?.getAttribute(RELATION_ATTR);
+  // Written from a NodeId by the panel renderer.
+  if (id) selectNode(id as NodeId);
+});
+
 const search = new SearchBox({
   input,
   list: results,
   nodes,
-  onSelect: (id: NodeId) => {
-    focus.pin(id, { suppressTapThrough: true });
-    view.nodeEls.get(id)?.scrollIntoView({
-      block: 'center',
-      inline: 'center',
-      behavior: reducedMotion ? 'auto' : 'smooth',
-    });
-  },
+  onSelect: selectNode,
 });
 
 // Escape is the global out: drop the pin and empty the search field.

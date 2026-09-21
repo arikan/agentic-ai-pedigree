@@ -74,12 +74,28 @@ the same option.
 
 ### Theme
 
-Three states: `system`, `light`, `dark`, stored under `pedigree-theme`.
-`system` *removes* `data-theme` so the media query decides — it is not a third
-palette. Storage access is wrapped in try/catch because it throws in private
-mode. The inline script in `index.html` duplicates the read on purpose, to
-apply the attribute before first paint; keep the storage key in step with
-`theme.ts`.
+Two states, `light` and `dark`, on one button pinned to the header's top-right
+corner (absolute, so it survives all three header arrangements without joining
+their flex rows). Stored under `pedigree-theme`.
+
+The system preference is only a seed for the first visit — there is no "follow
+the system" state, so `data-theme` is always set once the page has loaded. The
+`prefers-color-scheme` block in `tokens.css` still matters as the no-JS and
+storage-unavailable fallback. Storage access is wrapped in try/catch because it
+throws in private mode, and the inline script in `index.html` repeats the read
+on purpose to beat first paint; keep its storage key in step with `theme.ts`.
+
+### Navigating from the card
+
+The relation rows under "Draws on" and "Feeds" are `<button>`s carrying
+`data-relation="<node id>"` (`RELATION_ATTR`, exported from `panel.ts` so both
+sides cannot drift). The panel is rebuilt as markup on every focus change, so
+they cannot own listeners — `main.ts` delegates from `#panel-body`.
+
+All navigation goes through `selectNode()` in `main.ts`: pin, focus the node
+element with `preventScroll`, then centre it deliberately. Search and the
+relation rows share it, so arriving from either behaves identically. Both are
+programmatic pins and must pass `{ suppressTapThrough: true }`.
 
 ### Traditions vs. lanes
 

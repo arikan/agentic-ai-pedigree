@@ -99,6 +99,15 @@ function byYear(end: (edge: PedigreeEdge) => NodeId) {
   return (a: PedigreeEdge, b: PedigreeEdge) => nodeById(end(a)).year - nodeById(end(b)).year;
 }
 
+/**
+ * The attribute a relation row carries its target in.
+ *
+ * The panel is rebuilt as markup on every focus change, so these rows cannot
+ * hold their own listeners; whoever mounts the panel delegates from a container
+ * and reads this attribute. Exported so the two sides cannot drift.
+ */
+export const RELATION_ATTR = 'data-relation';
+
 function list(
   edges: readonly PedigreeEdge[],
   end: (edge: PedigreeEdge) => NodeId,
@@ -109,7 +118,13 @@ function list(
     .map((edge) => {
       const other = nodeById(end(edge));
       const caveat = edge.kind === 'weak' ? `<span class="w">${esc(edge.label)}</span>` : '';
-      return `<li><span class="n">${esc(other.name)}</span><span class="y">${other.year}</span>${caveat}</li>`;
+      // A button, not a link: this navigates the chart, it does not leave the
+      // page, and it has to be reachable by keyboard and large enough to tap.
+      return `<li class="rel-row"><button type="button" class="rel" ${RELATION_ATTR}="${esc(
+        other.id,
+      )}"><span class="n">${esc(other.name)}</span><span class="y">${
+        other.year
+      }</span>${caveat}</button></li>`;
     })
     .join('');
 }

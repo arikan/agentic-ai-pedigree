@@ -30,11 +30,12 @@ Pushing to `main` builds and publishes to GitHub Pages.
 
 ## Theme and layout
 
-**Theme** is a three-way choice in the header: follow the system, or pin light
-or dark. The choice persists in `localStorage`, and an inline script in
-`index.html` applies it before first paint so a pinned dark page never flashes
-light. The colours themselves are pure CSS — `src/styles/tokens.css` holds three
-blocks that must stay in sync, and `ThemeController` only sets `data-theme`.
+**Theme** is one button in the top right: light or dark. The system preference
+seeds the first visit and nothing after that, so the choice stays the reader's;
+it persists in `localStorage`, and an inline script in `index.html` applies it
+before first paint so a dark page never flashes light. The colours themselves
+are pure CSS — `src/styles/tokens.css` holds three blocks that must stay in
+sync, and `ThemeController` only sets `data-theme`.
 
 **Layout** has two modes:
 
@@ -47,6 +48,12 @@ blocks that must stay in sync, and `ThemeController` only sets `data-theme`.
   sheet collapsed to a labelled bar. Tapping a node opens it; tapping the bar,
   or Escape, closes it. Hover tracing is not bound at all on a device that
   cannot hover, so a tap pins cleanly instead of tracing twice.
+
+**Navigating** works three ways, and they all end in the same place: click a
+node in the chart, search by name, work or year, or click a row under **Draws
+on** / **Feeds** on the card. Those rows are buttons — a click or Enter pins
+that node, centres it in the chart and moves keyboard focus onto it, so you can
+walk a lineage card by card without going back to the diagram.
 
 ## Editing the chart
 
