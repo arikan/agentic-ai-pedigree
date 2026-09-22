@@ -37,7 +37,6 @@ export type PanelDeps = {
   readonly graph: PedigreeGraph;
   readonly nodeCount: number;
   readonly edgeCount: number;
-  readonly weakCount: number;
 };
 
 /**
@@ -82,15 +81,19 @@ export function renderNodePanel(
   return node.name;
 }
 
-/** The resting state: how to read the chart, and what is on it. */
+/**
+ * The resting state: how to read the chart, and what is on it.
+ *
+ * Kept to the notation and the gestures. The framing — what today's agent is
+ * made of — is the header subtitle's job, on every screen size, so it is not
+ * repeated here.
+ */
 export function renderIntroPanel(panel: Element, deps: PanelDeps): string {
   panel.innerHTML = `
     <h2>${INTRO_HEADING}</h2>
-    <div class="meta">${deps.nodeCount} nodes · ${deps.edgeCount} edges · ${deps.weakCount} weak</div>
-    <p>Today’s agent is a statistical prior, post-trained by RL, wrapped in a tool loop, and named after the principal–agent relation in economics. Trace the bottom row to see how little of the chart it cites.</p>
-    <p><b>Solid lines</b> are documented transfers. <b>Dashed lines</b> are resemblances or priority without known transmission; their caveat appears when traced.</p>
-    <p>Time runs downward, compressed before 1900. Each node carries its own year; positions within a crowded decade are approximate. Each lane is headed by what "agent" means there.</p>
-    <p class="hint">Hover or tap a node. Click empty space or press Escape to release a pinned one.</p>`;
+    <div class="meta">${deps.nodeCount} nodes · ${deps.edgeCount} edges</div>
+    <p><b>Solid lines</b> are documented influence: a citation, an acknowledgment, correspondence, a shared lab or teacher. <b>Dashed lines</b> are resemblance, or priority without known transmission.</p>
+    <p>Time runs downward, compressed before 1900. Within a crowded decade the year label is the authority, not the height on the page. Each lane heading says what “agent” means there.</p>`;
 
   return INTRO_HEADING;
 }

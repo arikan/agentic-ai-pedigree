@@ -4,7 +4,9 @@ import { edges } from './data/edges';
 import type { NodeId } from './data/nodes';
 import { nodes } from './data/nodes';
 import { PedigreeGraph } from './graph';
+import { backToTop } from './interaction/back-to-top';
 import { FocusController } from './interaction/focus';
+import { scrollCue } from './interaction/scroll-cue';
 import { SearchBox } from './interaction/search';
 import { PanelSheet } from './interaction/sheet';
 import { stickyHeader } from './interaction/sticky-header';
@@ -24,6 +26,8 @@ function required<T extends Element>(selector: string, type: new () => T): T {
 }
 
 const chartbox = required('#chartbox', HTMLDivElement);
+const cue = required('#scroll-cue', HTMLDivElement);
+const jumpTop = required('#jump-top', HTMLButtonElement);
 const panel = required('#panel', HTMLElement);
 const panelBody = required('#panel-body', HTMLDivElement);
 const sheetHandle = required('#sheet-handle', HTMLButtonElement);
@@ -41,11 +45,14 @@ const routed = routeEdges(edges, layout.placedById, layout.placed);
 const graph = new PedigreeGraph(edges);
 const view = renderChart(chartbox, layout, routed);
 
+// After the chart exists, so the pane has a scrollWidth to measure.
+scrollCue(cue, chartbox);
+backToTop(jumpTop, chartbox);
+
 const panelDeps: PanelDeps = {
   graph,
   nodeCount: nodes.length,
   edgeCount: edges.length,
-  weakCount: edges.filter((edge) => edge.kind === 'weak').length,
 };
 
 const focus = new FocusController({
@@ -58,7 +65,7 @@ const focus = new FocusController({
   onClear: (heading) => sheet.reset(heading),
 });
 
-stickyHeader(header);
+stickyHeader(header, chartbox);
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

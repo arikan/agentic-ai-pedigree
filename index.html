@@ -1,62 +1,102 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>A Pedigree of Agentic AI</title>
-<meta name="description" content="Where the ideas behind today’s AI agents came from, and who took what from whom: 150 people, papers, machines and institutions, from year 780 to 2026.">
-<meta name="author" content="Burak Arikan">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f5f1e8">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<script>
-  // Apply the theme before first paint, so a dark page never flashes light.
-  // The system preference only seeds the first visit; the controller takes
-  // over once the module loads. If storage is unavailable the attribute stays
-  // off and the stylesheet's prefers-color-scheme block decides.
-  try {
-    var t = localStorage.getItem('pedigree-theme');
-    if (t !== 'light' && t !== 'dark') {
-      t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    document.documentElement.setAttribute('data-theme', t);
-  } catch (e) {}
-</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>A Pedigree of Agentic AI</title>
+  <meta name="description"
+    content="Where the ideas behind today’s AI agents came from, and who took what from whom: 150 people, papers, machines and institutions, from year 780 to 2026.">
+  <meta name="author" content="Burak Arikan">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f5f1e8">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>
+    // Apply the theme before first paint, so a dark page never flashes light.
+    // The system preference only seeds the first visit; the controller takes
+    // over once the module loads. If storage is unavailable the attribute stays
+    // off and the stylesheet's prefers-color-scheme block decides.
+    try {
+      var t = localStorage.getItem('pedigree-theme');
+      if (t !== 'light' && t !== 'dark') {
+        t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { }
+  </script>
 </head>
+
 <body>
 
-<div class="wrap">
-<header>
-  <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Dark theme" title="Switch to dark theme">
-    <svg class="i-sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.25"/><path d="M8 1v1.75M8 13.25V15M1 8h1.75M13.25 8H15M3.05 3.05l1.24 1.24M11.71 11.71l1.24 1.24M3.05 12.95l1.24-1.24M11.71 4.29l1.24-1.24"/></svg>
-    <svg class="i-moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1z"/></svg>
-  </button>
-  <h1>A pedigree of <em>agentic AI</em> systems</h1>
-  <p class="byline">by <a href="https://burak-arikan.com" target="_blank" rel="noopener">Burak Arikan</a></p>
-  <p class="sub">Where the ideas behind today’s AI agents came from, and who took what from whom. 150 people, papers, machines and institutions, from year 780 to 2026. Hover or tap a box to trace its ancestry.</p>
-  <div class="controls">
-    <div class="search">
-      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <input id="search" type="search" placeholder="Find a name, work, or year" autocomplete="off" aria-label="Find a node" aria-controls="results" aria-expanded="false">
-      <kbd class="key" aria-hidden="true">/</kbd>
-      <ul class="results" id="results" role="listbox" hidden></ul>
+  <div class="wrap">
+    <header>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Dark theme"
+        title="Switch to dark theme">
+        <svg class="i-sun" viewBox="0 0 16 16" aria-hidden="true">
+          <circle cx="8" cy="8" r="3.25" />
+          <path
+            d="M8 1v1.75M8 13.25V15M1 8h1.75M13.25 8H15M3.05 3.05l1.24 1.24M11.71 11.71l1.24 1.24M3.05 12.95l1.24-1.24M11.71 4.29l1.24-1.24" />
+        </svg>
+        <svg class="i-moon" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1z" />
+        </svg>
+      </button>
+      <h1>A pedigree of <em>agentic AI</em> systems</h1>
+      <p class="byline">by <a href="https://burak-arikan.com" target="_blank" rel="noopener">Burak Arikan</a></p>
+      <p class="sub">Today's AI agent is a statistical prior, post-trained by Reinforcement Learning, wrapped in a tool loop, and named
+        after the principal-agent relation in economics. Where did the ideas behind today's AI agents come from, and who
+        took what from whom? 150 people, papers, machines and institutions, from year 780 to 2026.</p>
+      <div class="controls">
+        <div class="search">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          <input id="search" type="search" placeholder="Find a name, work, or year" autocomplete="off"
+            aria-label="Find a node" aria-controls="results" aria-expanded="false">
+          <kbd class="key" aria-hidden="true">/</kbd>
+          <ul class="results" id="results" role="listbox" hidden></ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div class="chartpane">
+        <div class="chartbox" id="chartbox"></div>
+        <!-- Decorative: the scrollbar is off screen, so the cue says out loud that
+         the chart continues to the right. Hidden until there is something to
+         scroll to, and inert, so it never intercepts a click on a node. -->
+        <div class="scroll-cue" id="scroll-cue" aria-hidden="true">
+          <span class="cue">
+            <span class="m">Scroll</span><span class="t">Swipe</span>
+            <svg viewBox="0 0 16 16">
+              <path d="M2.5 8h9.5M8.75 4.25 12.5 8l-3.75 3.75" />
+            </svg>
+          </span>
+        </div>
+        <!-- A real control, unlike the cue: the narrow layout gives the chart
+             3275px of vertical scroll, and this is the way back. -->
+        <button class="jump-top" id="jump-top" type="button" title="Back to the top"
+          aria-label="Back to the top of the chart">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 13V3.5M3.75 7.75 8 3.5l4.25 4.25" />
+          </svg>
+        </button>
+      </div>
+      <aside class="panel" id="panel" data-expanded="false">
+        <button class="sheet-handle" id="sheet-handle" type="button" aria-expanded="false" aria-controls="panel-body">
+          <span class="grip" aria-hidden="true"></span>
+          <span class="label" id="sheet-label">Reading the chart</span>
+          <svg class="chev" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 10l4-4 4 4" />
+          </svg>
+        </button>
+        <div class="panel-body" id="panel-body"></div>
+      </aside>
     </div>
   </div>
-</header>
 
-<div class="layout">
-  <div class="chartbox" id="chartbox"></div>
-  <aside class="panel" id="panel" data-expanded="false">
-    <button class="sheet-handle" id="sheet-handle" type="button" aria-expanded="false" aria-controls="panel-body">
-      <span class="grip" aria-hidden="true"></span>
-      <span class="label" id="sheet-label">Reading the chart</span>
-      <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4"/></svg>
-    </button>
-    <div class="panel-body" id="panel-body"></div>
-  </aside>
-</div>
-</div>
-
-<script type="module" src="/src/main.ts"></script>
+  <script type="module" src="/src/main.ts"></script>
 </body>
+
 </html>
