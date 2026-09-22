@@ -1,13 +1,20 @@
 # A Pedigree of Agentic AI
 
-Where the ideas behind today’s AI agents came from, and who took what from
-whom. 150 people, papers, machines and institutions, from year 780 to 2026, in
-eight traditions drawn as six columns. Hover or tap a box to trace its
-ancestry: solid lines are documented transfers, dashed lines are resemblances
-or priority without known transmission, each carrying the caveat that makes it
-weak.
+Today’s AI agent is a statistical prior, post-trained by Reinforcement
+Learning, wrapped in a tool loop, and named after the principal-agent relation
+in economics. Where did the ideas behind today’s AI agents come from, and who
+took what from whom? 150 people, papers, machines and institutions, from year
+780 to 2026, in eight traditions drawn as six columns.
+
+Hover or tap a box to trace its ancestry. **Solid lines** are documented
+influence: a citation, an acknowledgment, correspondence, a shared lab or
+teacher. **Dashed lines** are resemblance, or priority without known
+transmission, and carry the caveat that makes them weak.
 
 Course material for *AI Agent & Platform Design*, Week 4.
+
+> **Ongoing work.** The chart works as it stands. Templates for the data files
+> are coming, so the same chart can carry another subject’s lineage.
 
 ## Running it
 
@@ -29,83 +36,62 @@ bun run dev        # http://localhost:5173
 
 ## Publishing
 
-Pushing to `main` runs `.github/workflows/deploy.yml`, which validates the data,
-typechecks, lints, builds and publishes to GitHub Pages. The site needs
-**Settings > Pages > Source: GitHub Actions** set once, after which every push
-to `main` redeploys.
+Pushing to `main` runs `.github/workflows/deploy.yml`: validate, typecheck,
+lint, build, publish to Pages. You set **Settings > Pages > Source: GitHub
+Actions** once, and every push after that redeploys. The workflow computes the
+base path itself, so a project site, an `<account>.github.io` repo and a
+`public/CNAME` domain all build correctly.
 
-The base path is worked out in the workflow rather than committed: a project
-site builds with `/<repo>/`, while an `<account>.github.io` repo or a
-`public/CNAME` file builds with `/`. To move to a custom domain, add
-`public/CNAME` containing the hostname, point a DNS CNAME record at
-`<account>.github.io`, and set the domain under Settings > Pages.
+## Reading it
 
-## Theme and layout
+**Theme** is one button, top right. Light or dark, and the choice is remembered
+between visits.
 
-**Theme** is one button in the top right: light or dark. The system preference
-seeds the first visit and nothing after that, so the choice stays the reader's;
-it persists in `localStorage`, and an inline script in `index.html` applies it
-before first paint so a dark page never flashes light. The colours themselves
-are pure CSS — `src/styles/tokens.css` holds three blocks that must stay in
-sync, and `ThemeController` only sets `data-theme`.
+**On a wide screen** (≥900px) the page scrolls, the card sits in a sticky
+column, and the header collapses to a bar once you scroll. By 2200px the whole
+chart fits beside the card.
 
-**Layout** has two modes:
+**On a narrow screen** (<900px) the layout becomes an app shell. The chart is
+the pane that scrolls, the card is a bottom sheet, and scrolling the chart
+collapses the header. A cue in one corner says the chart continues to the
+right, and a button in the other goes back to the top.
 
-- **Wide (≥900px)** — the page scrolls, the panel is a sticky column, and the
-  header collapses to a bar once you scroll. From 1800px the panel widens and
-  the page's width ceiling rises; by 2200px the whole 1684px chart fits beside
-  the panel with no horizontal scrolling at all.
-- **Narrow (<900px)** — an app shell. The page itself stops scrolling, the chart
-  becomes a pane that scrolls in both directions, and the panel becomes a bottom
-  sheet collapsed to a labelled bar. Tapping a node opens it; tapping the bar,
-  or Escape, closes it. Hover tracing is not bound at all on a device that
-  cannot hover, so a tap pins cleanly instead of tracing twice.
-
-**Navigating** works three ways, and they all end in the same place: click a
-node in the chart, search by name, work or year, or click a row under **Draws
-on** / **Feeds** on the card. Those rows are buttons — a click or Enter pins
-that node, centres it in the chart and moves keyboard focus onto it, so you can
-walk a lineage card by card without going back to the diagram.
+**To navigate**, click a node, search by name, work or year, or click a row
+under **Draws on** / **Feeds**. Each of the three pins the node and centres it.
 
 ## Editing the chart
 
-All content is in `src/data/`, and it is typed so that the mistakes that used to
-fail silently now fail to compile.
+Everything is in `src/data/`, typed so that a reference to a node that does not
+exist fails to compile.
 
-- **A node** goes in `src/data/nodes.ts` as
-  `[id, tradition, year, name, [work lines], note]`. The second field is the
-  *tradition*, which picks both the lane and the column within it.
-- **An edge** goes in `src/data/edges.ts` as `[from, to, kind, caveat?]`, where
-  `kind` is `'doc'` (solid) or `'weak'` (dashed, and its caveat is required).
-  Endpoints are checked against the node ids, so a typo will not compile.
-- **References** go in `src/data/refs.ts`, keyed by node id.
-- **A lane** goes in `src/data/lanes.ts`, and needs a pictogram in
-  `src/render/icons.ts`. Adding a tradition to a lane's `members` widens the
-  chart by one column.
+- **A node** in `nodes.ts`: `[id, tradition, year, name, [work lines], note]`;
+  the tradition picks the lane and the column within it.
+- **An edge** in `edges.ts`: `[from, to, kind, caveat?]`, where `'doc'` draws
+  solid and `'weak'` draws dashed with its caveat required.
+- **References** in `refs.ts`, keyed by node id.
+- **A lane** in `lanes.ts`, with a pictogram in `render/icons.ts`.
 
-`bun run validate` then checks what the types cannot: duplicate ids, self-loops,
-duplicate edges, years off the axis, dashed edges missing their caveat, and
-edges that run backwards in time.
+`bun run validate` then checks what types cannot: duplicate ids, self-loops,
+duplicate edges, years off the axis, a dashed edge with no caveat, an edge
+running backwards in time.
 
-## Layout
+## How it is built
 
-There is no framework. The chart is built once as SVG and never re-rendered;
-tracing a lineage toggles CSS classes on the existing elements.
+There is no framework and no runtime dependencies. The chart is drawn once as
+SVG and never re-rendered; tracing a lineage only toggles CSS classes. Time
+runs downward on a piecewise scale (`SEG` in `layout.ts`), so height within a
+crowded decade is approximate — the year label is the authority.
 
 ```
 src/
-  main.ts                 wiring
-  layout.ts               time scale, lane and slot placement, edge routing
-  graph.ts                adjacency and ancestor/descendant walks
-  data/                   the content, typed
-  render/                 SVG construction, lane icons, side panel
-  interaction/            focus and pinning, typeahead, sticky header
-  styles/                 tokens.css (colours, three theme blocks) + app.css
-scripts/validate-data.ts  data invariants
+  main.ts       wiring
+  layout.ts     time scale, lane and slot placement, edge routing
+  graph.ts      adjacency and ancestor/descendant walks
+  data/         the content, typed
+  render/       SVG construction, lane icons, side panel
+  interaction/  focus, search, theme, sheet, header, scroll cues
+  styles/       tokens.css (colours) + app.css
 ```
 
-Time runs downward on a piecewise scale (`SEG` in `layout.ts`) that compresses
-deep history and stretches the last few years. A node sits on its own year
-unless its slot is taken, in which case it is pushed down — so height on the
-page is approximate within a crowded decade, and the year label is the
-authority.
+`CLAUDE.md` has the rest: the focus model, the two layout shells and the traps
+in them, and the conventions the data files follow.
