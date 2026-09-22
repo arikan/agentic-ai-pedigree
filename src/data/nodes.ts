@@ -16,6 +16,7 @@ import type { NodeTuple, TraditionId } from './types';
  */
 export const NODE_TUPLES = [
  // logic
+ ['khwarizmi','logic',820,'al-Khwarizmi',['Kitab al-jabr;','Algoritmi de numero Indorum'],'Procedure as an object of study: rules a clerk can run without knowing why they work. “Algorithm” is the Latinization of his name, through the 12th-century translation of the second book. At the Bayt al-Hikma in Baghdad under al-Ma’mun (r. 813–833).'],
  ['zairja','logic',1150,'Zairja',['combinatorial divination device'],'Arabic letter-combining device for generating answers to questions. Described by Ibn Khaldun.'],
  ['llull','logic',1305,'Ramon Llull',['Ars Magna, logic wheels'],'Mechanical combination of concepts to generate arguments.'],
  ['leibniz','logic',1666,'Leibniz',['characteristica universalis,','calculus ratiocinator, binary'],'Reasoning as calculation; a universal symbolic language; a working calculator (1673); binary arithmetic (1703). Most logical papers unpublished until Couturat, 1901–03.'],
@@ -31,7 +32,7 @@ export const NODE_TUPLES = [
  ['lean','logic',2013,'Proof assistants',['Lean; typed tool schemas'],'Where Leibniz’s calculus survives today: checkers that judge an LLM’s output.'],
 
  // control
- ['banumusa','control',850,'Banu Musa',['Book of Ingenious Devices'],'Float valves, self-regulating mechanisms, a programmable flute player. Baghdad.'],
+ ['banumusa','control',850,'Banu Musa',['Book of Ingenious Devices'],'Float valves, self-regulating mechanisms, a programmable flute player. Three brothers at the Bayt al-Hikma, Baghdad.'],
  ['jazari','control',1206,'al-Jazari',['automata'],'Programmable mechanical devices; continues the Baghdad line.'],
  ['watt','control',1788,'James Watt',['centrifugal governor'],'Feedback regulation of a steam engine.'],
  ['maxwellgov','control',1868,'James Clerk Maxwell',['On Governors'],'First mathematical analysis of feedback stability.'],
@@ -82,8 +83,8 @@ export const NODE_TUPLES = [
  ['argyle','popstat',2023,'Argyle et al.',['silicon samples'],'LLMs as stand-ins for survey respondents. Quetelet’s circle closes.'],
 
  // textstat
- ['khalil','textstat',780,'al-Khalil',['Kitab al-Ayn'],'Enumerated all possible Arabic letter combinations; early combinatorics.'],
- ['kindi','textstat',850,'al-Kindi',['frequency analysis'],'Reference-sample letter frequencies matched against ciphertext. Earliest recorded statistical inference (Broemeling 2011). Rediscovered in Istanbul, 1987.'],
+ ['khalil','textstat',780,'al-Khalil',['Kitab al-Ayn'],'Enumerated all possible Arabic letter combinations; early combinatorics. Basra, a generation before the Bayt al-Hikma.'],
+ ['kindi','textstat',850,'al-Kindi',['frequency analysis'],'Reference-sample letter frequencies matched against ciphertext. Earliest recorded statistical inference (Broemeling 2011). At the Bayt al-Hikma alongside al-Khwarizmi and the Banu Musa — who later had his library confiscated. Rediscovered in Istanbul, 1987.'],
  ['ibnadlan','textstat',1250,'Ibn Adlan',['minimum text length'],'An early sample-size argument. Continued by Ibn al-Durayhim and al-Qalqashandi.'],
  ['alberti','textstat',1467,'L. B. Alberti',['European cryptanalysis'],'Frequency analysis appears in Europe. Independent invention or unrecorded transmission.'],
  ['markov','textstat',1913,'A. A. Markov',['chains, on Pushkin'],'Letter sequences in Eugene Onegin; the first statistical language model.'],

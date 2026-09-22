@@ -6,6 +6,7 @@ import type { Reference } from './types';
  * entry show "None listed."
  */
 export const REFS: Partial<Record<NodeId, readonly Reference[]>> = {
+  khwarizmi: [['Wikipedia: Al-Khwarizmi', 'https://en.wikipedia.org/wiki/Al-Khwarizmi'], ['Stanford Encyclopedia: The Church-Turing Thesis', 'https://plato.stanford.edu/entries/church-turing/']],
   zairja: [['Wikipedia: Zairja', 'https://en.wikipedia.org/wiki/Zairja']],
   llull: [['Wikipedia: Ramon Llull', 'https://en.wikipedia.org/wiki/Ramon_Llull'], ['Stanford Encyclopedia: Ramon Llull', 'https://plato.stanford.edu/entries/llull/']],
   leibniz: [['Stanford Encyclopedia: Leibniz', 'https://plato.stanford.edu/entries/leibniz/'], ['Wikipedia: Characteristica universalis', 'https://en.wikipedia.org/wiki/Characteristica_universalis']],

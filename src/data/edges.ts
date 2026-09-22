@@ -13,6 +13,7 @@ import type { EdgeKind } from './types';
  */
 export const EDGE_TUPLES = [
  // logic
+ ['khwarizmi','hilbert','weak','the word and the practice carry over, not a citation'],
  ['zairja','llull','weak','argued, not settled'],
  ['llull','leibniz','doc'],
  ['leibniz','boole','weak','independent; Leibniz unpublished until 1901'],
