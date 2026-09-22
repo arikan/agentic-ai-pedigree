@@ -124,6 +124,17 @@ Two states, `light` and `dark`, on one button pinned to the header's top-right
 corner (absolute, so it survives all three header arrangements without joining
 their flex rows). Stored under `pedigree-theme`.
 
+Swapping theme repaints every colour at once, so `ThemeController` puts
+`theme-anim` on `:root` for the length of the swap and takes it off again. That
+class carries a blanket colour transition (`background-color`, `color`,
+`border-color`, `fill`, `stroke`, `box-shadow`, `opacity`) at `(0,2,0)`
+specificity, which beats the 0.12–0.15s hover rules without `!important` and
+loses to the reduced-motion block. Keep it temporary: left on, it would slow
+every hover and focus across 150 nodes. The `theme-color` meta is read from the
+`--ground` token rather than the computed background, because a custom property
+is not animated and so already holds the new colour while the page is still
+easing towards it.
+
 The system preference is only a seed for the first visit — there is no "follow
 the system" state, so `data-theme` is always set once the page has loaded. The
 `prefers-color-scheme` block in `tokens.css` still matters as the no-JS and
@@ -168,7 +179,11 @@ a mouse-over on a wide screen does not fight the bottom sheet on a narrow one.
 
 `stickyHeader` has a similar one-value contract in the other direction: it
 writes the collapsed header height to `--hdr` on `:root`, and the sticky panel's
-`top` in `app.css` reads it. Neither side guesses an offset.
+`top` in `app.css` reads it. Neither side guesses an offset. The collapse is
+animated (padding and title size both ease), so the height is published from a
+**ResizeObserver** rather than measured when the class flips — measuring then
+catches the header mid-ease. That is safe only because `--hdr` feeds the panel's
+`top` and nothing that can resize the header back.
 
 ### The subtitle frames, the card explains
 

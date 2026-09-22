@@ -31,7 +31,7 @@ header {
   background: var(--ground);
   margin: 0 -16px 12px;
   padding: 0 16px 10px;
-  transition: padding .15s;
+  transition: padding .22s ease;
 }
 header.stuck {
   display: flex;
@@ -56,6 +56,8 @@ header.stuck .search {
 }
 h1 {
   padding-right: 44px;
+  /* The masthead shrinks to a bar on scroll; let it shrink rather than snap. */
+  transition: font-size .22s ease;
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 400;
   font-size: 28px;
@@ -104,14 +106,17 @@ h1 em {
   align-items: center;
   gap: 10px;
   margin-top: 10px;
+  transition: margin-top .22s ease;
 }
 .search {
   position: relative;
   width: 300px;
   max-width: 100%;
+  transition: width .22s ease;
 }
 .search input {
   width: 100%;
+  transition: border-color .15s ease, background-color .15s ease;
   font: inherit;
   font-size: 13px;
   color: var(--ink);
@@ -136,6 +141,9 @@ h1 em {
   padding: 3px 6px;
   pointer-events: none;
   background: var(--ground);
+}
+.search .key {
+  transition: opacity .15s ease;
 }
 .search input:focus ~ .key {
   opacity: 0;
@@ -516,6 +524,7 @@ svg {
 }
 .edge-label {
   font-size: 10px;
+  transition: opacity .15s;
   fill: var(--accent);
   paint-order: stroke;
   stroke: var(--ground);
@@ -526,6 +535,9 @@ svg {
 }
 .node {
   cursor: pointer;
+  /* The counterpart of the .edge rule above: a trace dims 150 boxes and lifts a
+     few back out, and both halves should happen at the same speed. */
+  transition: opacity .15s;
 }
 .node rect {
   fill: var(--node);
@@ -862,6 +874,25 @@ svg.focused .edge-label.on {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Switching theme repaints every colour on the page at once — ground, rules,
+   150 boxes, 213 edges and every label. `ThemeController` puts `theme-anim` on
+   the root for the length of the swap and takes it off again, so the whole page
+   eases across together while hover and focus stay immediate, which is what
+   they want to be. Specificity, not !important, is what lets it win: (0,2,0)
+   beats the .12-.15s rules above, and the reduced-motion block below beats it.
+   --------------------------------------------------------------------------- */
+:root.theme-anim,
+:root.theme-anim *,
+:root.theme-anim *::before,
+:root.theme-anim *::after {
+  transition-property: background-color, background-image, border-color, color, fill, stroke,
+    box-shadow, opacity;
+  transition-duration: .35s;
+  transition-timing-function: ease;
+  transition-delay: 0s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
@@ -901,23 +932,31 @@ svg.focused .edge-label.on {
   outline-offset: 1px;
 }
 .theme-toggle svg {
+  /* Both icons share one cell so the swap can be a cross-fade. */
+  grid-area: 1 / 1;
   width: 15px;
   height: 15px;
+  transition: opacity .25s ease, transform .35s ease;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-/* Show the theme you would switch to, not the one you are in. */
+/* Show the theme you would switch to, not the one you are in: the outgoing
+   icon turns and shrinks away while the incoming one turns into place. Both
+   are aria-hidden, so neither is announced while it is invisible. */
 .i-sun {
-  display: none;
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.6);
 }
 :root[data-theme="dark"] .i-sun {
-  display: block;
+  opacity: 1;
+  transform: none;
 }
 :root[data-theme="dark"] .i-moon {
-  display: none;
+  opacity: 0;
+  transform: rotate(90deg) scale(0.6);
 }
 /* Collapsed header is a short flex row; centre the button in it. */
 header.stuck .theme-toggle {

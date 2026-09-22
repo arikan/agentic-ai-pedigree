@@ -1,5 +1,8 @@
 const STORAGE_KEY = 'pedigree-theme';
 
+/** How long `theme-anim` stays on: the .35s in app.css, plus a frame of slack. */
+const SWAP_MS = 420;
+
 export type Theme = 'light' | 'dark';
 
 function isTheme(value: string | null): value is Theme {
@@ -42,6 +45,7 @@ function systemPreference(): Theme {
  */
 export class ThemeController {
   private theme: Theme;
+  private swapTimer = 0;
 
   constructor(private readonly button: HTMLButtonElement) {
     this.theme = readStored() ?? systemPreference();
@@ -60,7 +64,21 @@ export class ThemeController {
   set(theme: Theme): void {
     this.theme = theme;
     writeStored(theme);
+    this.easeSwap();
     this.apply();
+  }
+
+  /**
+   * Turn the blanket colour transition on for the length of the swap and then
+   * off again. Leaving it on would slow every hover and focus on the chart;
+   * this way the page crossfades only when the whole palette changes. The
+   * first `apply()` deliberately skips it — a page should not fade in on load.
+   */
+  private easeSwap(): void {
+    const root = document.documentElement;
+    root.classList.add('theme-anim');
+    window.clearTimeout(this.swapTimer);
+    this.swapTimer = window.setTimeout(() => root.classList.remove('theme-anim'), SWAP_MS);
   }
 
   private apply(): void {
@@ -71,10 +89,14 @@ export class ThemeController {
     this.button.setAttribute('aria-pressed', String(dark));
     this.button.title = dark ? 'Switch to light theme' : 'Switch to dark theme';
 
-    // Keep the mobile browser chrome the same colour as the page.
+    // Keep the mobile browser chrome the same colour as the page. Read the
+    // token, not the computed background: a custom property is not animated, so
+    // it already holds the new colour while the background is still easing
+    // towards it.
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta instanceof HTMLMetaElement) {
-      meta.content = getComputedStyle(document.body).backgroundColor;
+      const ground = getComputedStyle(document.documentElement).getPropertyValue('--ground').trim();
+      if (ground) meta.content = ground;
     }
   }
 }

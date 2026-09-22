@@ -9,7 +9,10 @@
  * contributes zero.
  *
  * The collapsed height is published as `--hdr` so the sticky side panel can sit
- * directly beneath it instead of guessing an offset.
+ * directly beneath it instead of guessing an offset. Collapsing is animated, so
+ * that height is published from a ResizeObserver rather than measured once at
+ * the moment the class flips — measuring then would catch the header mid-ease
+ * and leave the panel sitting under a bar that has since finished shrinking.
  */
 export function stickyHeader(header: HTMLElement, pane: HTMLElement): void {
   /**
@@ -21,19 +24,26 @@ export function stickyHeader(header: HTMLElement, pane: HTMLElement): void {
   const EXPAND = 40;
   let stuck = false;
 
-  const update = (): void => {
-    const offset = window.scrollY + pane.scrollTop;
-    const want = offset > (stuck ? EXPAND : COLLAPSE);
-    if (want === stuck) return;
-    stuck = want;
-    header.classList.toggle('stuck', stuck);
+  const publish = (): void => {
     document.documentElement.style.setProperty(
       '--hdr',
       stuck ? `${header.offsetHeight + 8}px` : '0px',
     );
   };
 
+  const update = (): void => {
+    const offset = window.scrollY + pane.scrollTop;
+    const want = offset > (stuck ? EXPAND : COLLAPSE);
+    if (want === stuck) return;
+    stuck = want;
+    header.classList.toggle('stuck', stuck);
+    publish();
+  };
+
   window.addEventListener('scroll', update, { passive: true });
   pane.addEventListener('scroll', update, { passive: true });
+  // Follows the ease, and a rewrap at a new width, for free. `--hdr` only feeds
+  // the panel's `top`, so nothing here can resize the header back.
+  new ResizeObserver(publish).observe(header);
   update();
 }
