@@ -45,7 +45,12 @@ jobs:
           echo "Building with BASE_PATH=$base"
           BASE_PATH="$base" bun run vite build
 
+      # `enablement` turns Pages on via the API if it is off, so the repository
+      # needs no manual setup and a fork works the same way. It uses the
+      # `pages: write` permission granted above.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
