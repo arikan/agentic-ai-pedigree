@@ -1,17 +1,11 @@
 # A Pedigree of Agentic AI
 
-Today’s AI agent is a statistical prior, post-trained by Reinforcement
-Learning, wrapped in a tool loop, and named after the principal-agent relation
-in economics. Where did the ideas behind today’s AI agents come from, and who
-took what from whom? 150 people, papers, machines and institutions, from year
-780 to 2026, in eight traditions drawn as six columns.
+Today's AI agent is a statistical prior, post-trained by Reinforcement Learning, wrapped in a tool loop, and named after the principal-agent relation in economics. Where did the ideas behind today's AI agents come from, and who took what from whom? 150 people, papers, machines and institutions, from year 780 to 2026.
 
 Hover or tap a box to trace its ancestry. **Solid lines** are documented
 influence: a citation, an acknowledgment, correspondence, a shared lab or
 teacher. **Dashed lines** are resemblance, or priority without known
 transmission, and carry the caveat that makes them weak.
-
-Course material for *AI Agent & Platform Design*, Week 4.
 
 > **Ongoing work.** The chart works as it stands. Templates for the data files
 > are coming, so the same chart can carry another subject’s lineage.
@@ -22,17 +16,6 @@ Course material for *AI Agent & Platform Design*, Week 4.
 bun install
 bun run dev        # http://localhost:5173
 ```
-
-| Command | What it does |
-| --- | --- |
-| `bun run dev` | Dev server with hot reload |
-| `bun run build` | Validate data, typecheck, then build to `dist/` |
-| `bun run preview` | Serve the built `dist/` |
-| `bun run validate` | Check the data invariants on their own |
-| `bun run typecheck` | `tsc --noEmit` |
-| `bun run lint` | Biome lint + format check |
-| `bun run format` | Apply Biome fixes |
-| `bun run check` | validate + typecheck + lint, as CI runs them |
 
 ## Publishing
 
