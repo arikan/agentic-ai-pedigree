@@ -196,8 +196,33 @@ export type PedigreeNode = {
   readonly note: string;
 };
 
+/**
+ * Sentence-case the first display line.
+ *
+ * `work` is authored in two registers: a title keeps its own capitals (*Ars
+ * Magna*, *On Computable Numbers*) while a description of what was done is
+ * written lowercase (`centrifugal governor`, `backpropagation`). That reads
+ * well in the source and badly on the card, where `work` is joined into one
+ * bold sentence and so opens with a lowercase letter. Fixing it here rather
+ * than in the data keeps the authoring convention and covers the node box too.
+ *
+ * Only the first line: the rest are continuations of the same sentence.
+ */
+function openWithCapital(work: readonly string[]): readonly string[] {
+  const [first, ...rest] = work;
+  if (!first) return work;
+  return [first[0]?.toUpperCase() + first.slice(1), ...rest];
+}
+
 export const nodes: readonly PedigreeNode[] = NODE_TUPLES.map(
-  ([id, tradition, year, name, work, note]) => ({ id, tradition, year, name, work, note }),
+  ([id, tradition, year, name, work, note]) => ({
+    id,
+    tradition,
+    year,
+    name,
+    work: openWithCapital(work),
+    note,
+  }),
 );
 
 const index: ReadonlyMap<NodeId, PedigreeNode> = new Map(nodes.map((node) => [node.id, node]));
