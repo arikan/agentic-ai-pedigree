@@ -631,20 +631,21 @@ svg.focused .edge-label.on {
     display: block;
   }
   h1 {
-    font-size: 19px;
+    font-size: 23px;
     white-space: normal;
   }
   .byline {
-    margin-top: 3px;
-    font-size: 12px;
+    margin-top: 4px;
+    font-size: 13px;
   }
   /* The subtitle is the only place the chart is framed in words, so it stays
-     even here; it just gets smaller and gives up a little leading. */
+     even here — and at a size meant to be read, not squinted at. The masthead
+     only has to be compact once it is stuck. */
   .sub {
     max-width: none;
-    font-size: 12px;
-    line-height: 1.35;
-    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.4;
+    margin-top: 5px;
   }
   /* Scrolling the chart collapses the masthead to a bar. The base
      `header.stuck` rules hide the subtitle and byline for us; what is left is
@@ -758,7 +759,10 @@ svg.focused .edge-label.on {
     bottom: 0;
     top: auto;
     z-index: 7;
-    max-height: min(78vh, 560px);
+    /* Deliberately short: the sheet is a card to read, not a page to live in,
+       and every pixel it takes is a pixel of chart. Anything longer scrolls
+       inside .panel-body. */
+    max-height: min(52vh, 420px);
     border: 0;
     border-top: 1px solid var(--rule);
     box-shadow: 0 -6px 24px var(--shadow);
@@ -770,7 +774,10 @@ svg.focused .edge-label.on {
   .panel[data-expanded="true"] {
     transform: translateY(0);
   }
+  /* min-height:0 is what lets this shrink below its content inside the flex
+     column, so the overflow it inherits from the base rule actually scrolls. */
   .panel-body {
+    min-height: 0;
     padding: 4px 16px 18px;
   }
   /* ~44px rows: this is a touch target, not a line of text. */
@@ -825,11 +832,18 @@ svg.focused .edge-label.on {
     font-size: 18px;
     font-weight: 700;
   }
+  /* Stroked, not filled: an unstroked path falls back to a black fill, which
+     disappears on the dark panel. `currentColor` then tracks the theme. */
   .sheet-handle .chev {
     flex: 0 0 auto;
-    width: 16px;
-    height: 16px;
-    color: var(--ink-3);
+    width: 18px;
+    height: 18px;
+    color: var(--ink-2);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
     transition: transform 0.22s ease;
   }
   .panel[data-expanded="true"] .sheet-handle .chev {
