@@ -45,12 +45,12 @@ jobs:
           echo "Building with BASE_PATH=$base"
           BASE_PATH="$base" bun run vite build
 
-      # `enablement` turns Pages on via the API if it is off, so the repository
-      # needs no manual setup and a fork works the same way. It uses the
-      # `pages: write` permission granted above.
+      # Pages must already be switched on for the repository, under
+      # Settings > Pages > Source: GitHub Actions. The `enablement` input cannot
+      # do it here: creating a Pages site is not something GITHUB_TOKEN is
+      # allowed to do, and it fails with "Resource not accessible by
+      # integration".
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
