@@ -15,6 +15,43 @@ export type ChartView = {
   readonly labelEls: ReadonlyMap<number, SVGTextElement>;
 };
 
+/**
+ * Pack `items` into as few lines of `maxWidth` as they fit in, measuring with
+ * `gauge` (which must already carry the class being measured).
+ *
+ * Nothing wraps because it was authored to: a heading or a definition stays on
+ * one line whenever the lane is wide enough, and the lines that do appear are a
+ * consequence of the width. An item is never broken up — for a heading the
+ * items are words, and for a lane's definitions they are the definitions
+ * themselves, so a lane too narrow for both breaks between them rather than
+ * through one. An item wider than the lane on its own overflows, which is the
+ * honest failure: it says the lane is too narrow for that name.
+ */
+function packToWidth(
+  gauge: SVGTextElement,
+  items: readonly string[],
+  maxWidth: number,
+  separator = ' ',
+): readonly string[] {
+  const lines: string[] = [];
+  let line = '';
+
+  for (const item of items) {
+    const candidate = line ? `${line}${separator}${item}` : item;
+    gauge.textContent = candidate;
+    // getComputedTextLength is 0 where text cannot be measured; one line then.
+    if (line && gauge.getComputedTextLength() > maxWidth) {
+      lines.push(line);
+      line = item;
+    } else {
+      line = candidate;
+    }
+  }
+  if (line) lines.push(line);
+
+  return lines;
+}
+
 /** Draw the whole chart once. Nothing here re-renders; focus is CSS state. */
 export function renderChart(
   container: Element,
@@ -34,6 +71,21 @@ export function renderChart(
 
   // Lane backgrounds, pictograms, headings.
   const laneLayer = el('g', {}, svg);
+  // Off-canvas, for measuring candidate lines; wears the class it measures.
+  const gauge = el('text', { x: -9999, y: -9999 }, svg);
+  // Every heading is measured before anything is drawn, because the definition
+  // lines all hang off the tallest one: a lane whose heading fits on one line
+  // must not pull its definition up out of line with its neighbours'.
+  gauge.setAttribute('class', 'lane-title');
+  const headings = lanes.map((lane) => packToWidth(gauge, lane.title.split(' '), lane.w - PAD));
+  // A lane's definitions share a line where they fit, separated by a middot.
+  gauge.setAttribute('class', 'lane-def');
+  const defs = lanes.map((lane) =>
+    packToWidth(gauge, lane.def.split('; '), lane.w - PAD, ' \u00b7 '),
+  );
+  gauge.remove();
+  const defY = 122 + 18 * Math.max(...headings.map((lines) => lines.length));
+
   for (const [index, lane] of lanes.entries()) {
     el(
       'rect',
@@ -48,16 +100,11 @@ export function renderChart(
     );
     icon.innerHTML = ICONS[lane.id] ?? '';
 
-    const titleLines = lane.title.split('|');
     const title = el('text', { x: lane.x + PAD, y: 122, class: 'lane-title' }, laneLayer);
-    textLines(title, titleLines, lane.x + PAD, 18);
+    textLines(title, headings[index] ?? [lane.title], lane.x + PAD, 18);
 
-    const def = el(
-      'text',
-      { x: lane.x + PAD, y: 122 + 18 * titleLines.length, class: 'lane-def' },
-      laneLayer,
-    );
-    textLines(def, lane.def.split('; '), lane.x + PAD, 14);
+    const def = el('text', { x: lane.x + PAD, y: defY, class: 'lane-def' }, laneLayer);
+    textLines(def, defs[index] ?? [lane.def], lane.x + PAD, 14);
   }
 
   // Year gridlines.

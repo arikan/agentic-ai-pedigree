@@ -25,9 +25,9 @@ export type EdgeKind = 'doc' | 'weak';
 export type Lane = {
   /** Stable id, also the key into `ICONS`. */
   readonly id: string;
-  /** Heading; `|` separates lines. */
+  /** Heading. Plain text; the renderer wraps it only if the lane is too narrow. */
   readonly title: string;
-  /** What "agent" means in this lane; `'; '` separates lines. */
+  /** What "agent" means in this lane, one definition per member; `'; '` between. */
   readonly def: string;
   /** Traditions sharing this column, one slot each, left to right. */
   readonly members: readonly TraditionId[];

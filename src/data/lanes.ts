@@ -8,37 +8,39 @@ import type { Lane, TraditionId } from './types';
  * Two lanes are shared — `physics` rides with `control`, `popstat` with
  * `textstat` — which is why there are eight traditions but six lanes.
  *
- * `title` splits on `|` into heading lines; `def` splits on `'; '`.
+ * `title` is plain text and `def` separates its definitions with `'; '`. Both
+ * are laid out at render time by measurement: one line where the lane is wide
+ * enough, more only where it is not.
  */
 export const LANES = [
-  { id: 'logic', title: 'Logic &|Computation', def: 'a calculating reasoner', members: ['logic'] },
+  { id: 'logic', title: 'Logic & Computation', def: 'a calculating reasoner', members: ['logic'] },
   {
     id: 'control',
-    title: 'Cybernetics &|Thermodynamics',
+    title: 'Cybernetics & Thermodynamics',
     def: 'a loop holding a goal; a measuring demon',
     members: ['control', 'physics'],
   },
   {
     id: 'stats',
-    title: 'Statistics &|Information Theory',
-    def: 'a draw from a distribution; a next-symbol predictor',
+    title: 'Statistics & Information Theory',
+    def: 'a draw from a distribution; a next-letter predictor',
     members: ['popstat', 'textstat'],
   },
   {
     id: 'neural',
-    title: 'Neural Networks &|Large Language Models',
+    title: 'Neural Networks & LLMs',
     def: 'a trained function; a next-token predictor',
     members: ['neural'],
   },
   {
     id: 'decision',
-    title: 'Decision Theory|& RL',
+    title: 'Decision Theory & RL',
     def: 'a reward optimizer',
     members: ['decision'],
   },
   {
     id: 'game',
-    title: 'Game Theory &|Complexity',
+    title: 'Game Theory & Complexity',
     def: 'a rule in a population',
     members: ['game'],
   },
